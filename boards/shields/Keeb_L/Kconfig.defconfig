@@ -1,0 +1,6 @@
+if SHIELD_KEEB_L
+
+config ZMK_KEYBOARD_NAME
+    default "Keeb_L"
+
+endif
