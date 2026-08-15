@@ -205,12 +205,13 @@
          * TOP -> BOTTOM
          */
 
-        row-gpios =
-            <&gpio0 20 GPIO_ACTIVE_HIGH>, /* R0 */
-            <&gpio0 22 GPIO_ACTIVE_HIGH>, /* R1 */
-            <&gpio0 24 GPIO_ACTIVE_HIGH>, /* R2 */
-            <&gpio1 0  GPIO_ACTIVE_HIGH>, /* R3 */
-            <&gpio0 11 GPIO_ACTIVE_HIGH>; /* R4 */
+               row-gpios =
+            <&gpio0 20 (GPIO_ACTIVE_HIGH | GPIO_PULL_DOWN)>, /* R0 */
+            <&gpio0 22 (GPIO_ACTIVE_HIGH | GPIO_PULL_DOWN)>, /* R1 */
+            <&gpio0 24 (GPIO_ACTIVE_HIGH | GPIO_PULL_DOWN)>, /* R2 */
+            <&gpio1 0  (GPIO_ACTIVE_HIGH | GPIO_PULL_DOWN)>, /* R3 */
+            <&gpio0 11 (GPIO_ACTIVE_HIGH | GPIO_PULL_DOWN)>; /* R4 */
+
 
 
         /*
