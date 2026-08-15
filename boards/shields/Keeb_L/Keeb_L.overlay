@@ -4,15 +4,26 @@
     chosen {
         zmk,kscan = &kscan0;
         zmk,matrix-transform = &default_transform;
+
+        /* OLED */
+        zephyr,display = &oled;
     };
+
+
+    /*
+     * ========================================================
+     * KEY MATRIX
+     * ========================================================
+     */
 
     kscan0: kscan {
         compatible = "zmk,kscan-gpio-matrix";
 
         /*
-         * Your diode stripe is toward the ROW.
+         * Diode stripe/cathode is toward ROW.
          */
         diode-direction = "col2row";
+
 
         /*
          * ROWS
@@ -31,37 +42,45 @@
         /*
          * COLUMNS
          *
-         * IMPORTANT:
+         * Physical wiring is RIGHT -> LEFT:
          *
-         * Physical wiring is:
+         * Physical C7 = P1.15
+         * Physical C6 = P1.13
+         * Physical C5 = P1.11
+         * Physical C4 = P0.10
+         * Physical C3 = P0.09
+         * Physical C2 = P1.06
+         * Physical C1 = P1.04
          *
-         * Column 7 = P1.15
-         * Column 6 = P1.13
-         * Column 5 = P1.11
-         * Column 4 = P0.10
-         * Column 3 = P0.09
-         * Column 2 = P1.06
-         * Column 1 = P1.04
+         * We reverse them in software so:
          *
-         * We intentionally reverse them here so
-         * software C0 is the LEFTMOST key.
+         * Software C0 = leftmost
+         * Software C6 = rightmost
          */
 
         col-gpios =
-            <&gpio1 15 GPIO_ACTIVE_HIGH>, /* Software C0 = physical C7 */
-            <&gpio1 13 GPIO_ACTIVE_HIGH>, /* Software C1 = physical C6 */
-            <&gpio1 11 GPIO_ACTIVE_HIGH>, /* Software C2 = physical C5 */
-            <&gpio0 10 GPIO_ACTIVE_HIGH>, /* Software C3 = physical C4 */
-            <&gpio0 9  GPIO_ACTIVE_HIGH>, /* Software C4 = physical C3 */
-            <&gpio1 6  GPIO_ACTIVE_HIGH>, /* Software C5 = physical C2 */
-            <&gpio1 4  GPIO_ACTIVE_HIGH>; /* Software C6 = physical C1 */
+            <&gpio1 15 GPIO_ACTIVE_HIGH>, /* C0 */
+            <&gpio1 13 GPIO_ACTIVE_HIGH>, /* C1 */
+            <&gpio1 11 GPIO_ACTIVE_HIGH>, /* C2 */
+            <&gpio0 10 GPIO_ACTIVE_HIGH>, /* C3 */
+            <&gpio0 9  GPIO_ACTIVE_HIGH>, /* C4 */
+            <&gpio1 6  GPIO_ACTIVE_HIGH>, /* C5 */
+            <&gpio1 4  GPIO_ACTIVE_HIGH>; /* C6 */
     };
 
 
     /*
      * ========================================================
-     * 29 KEY MATRIX TRANSFORM
+     * MATRIX TRANSFORM
      * ========================================================
+     *
+     * 29 keys:
+     *
+     * Row 0 = 6
+     * Row 1 = 6
+     * Row 2 = 7
+     * Row 3 = 6
+     * Row 4 = 4
      */
 
     default_transform: matrix_transform {
@@ -71,15 +90,7 @@
         rows = <5>;
 
         map = <
-
-            /*
-             * ROW 0
-             *
-             * 6 keys
-             *
-             * C0 C1 C2 C3 C4 C5
-             */
-
+            /* Row 0 */
             RC(0,0)
             RC(0,1)
             RC(0,2)
@@ -87,15 +98,7 @@
             RC(0,4)
             RC(0,5)
 
-
-            /*
-             * ROW 1
-             *
-             * 6 keys
-             *
-             * C0 C1 C2 C3 C4 C5
-             */
-
+            /* Row 1 */
             RC(1,0)
             RC(1,1)
             RC(1,2)
@@ -103,15 +106,7 @@
             RC(1,4)
             RC(1,5)
 
-
-            /*
-             * ROW 2
-             *
-             * 7 keys
-             *
-             * C0 C1 C2 C3 C4 C5 C6
-             */
-
+            /* Row 2 */
             RC(2,0)
             RC(2,1)
             RC(2,2)
@@ -120,15 +115,7 @@
             RC(2,5)
             RC(2,6)
 
-
-            /*
-             * ROW 3
-             *
-             * 6 keys
-             *
-             * C0 C1 C2 C3 C4 C5
-             */
-
+            /* Row 3 */
             RC(3,0)
             RC(3,1)
             RC(3,2)
@@ -136,19 +123,111 @@
             RC(3,4)
             RC(3,5)
 
-
-            /*
-             * ROW 4
-             *
-             * 4 keys
-             *
-             * C2 C3 C4 C6
-             */
-
+            /* Row 4 */
             RC(4,2)
             RC(4,3)
             RC(4,4)
             RC(4,6)
         >;
+    };
+
+
+    /*
+     * ========================================================
+     * ENCODER
+     * ========================================================
+     */
+
+    encoder: encoder {
+        compatible = "alps,ec11";
+
+        a-gpios = <&gpio1 1 GPIO_ACTIVE_HIGH>;
+        b-gpios = <&gpio1 2 GPIO_ACTIVE_HIGH>;
+
+        steps = <4>;
+
+        status = "okay";
+    };
+};
+
+
+/*
+ * ============================================================
+ * I2C PIN CONTROL
+ * ============================================================
+ *
+ * OLED:
+ *
+ * SDA = P0.02
+ * SCL = P0.29
+ *
+ * These are deliberately NOT the normal nice!nano I2C pins
+ * because P0.20 is already being used by Matrix Row 0.
+ */
+
+&pinctrl {
+    i2c0_default: i2c0_default {
+        group1 {
+            psels =
+                <NRF_PSEL(TWIM_SDA, 0, 2)>,
+                <NRF_PSEL(TWIM_SCL, 0, 29)>;
+        };
+    };
+
+    i2c0_sleep: i2c0_sleep {
+        group1 {
+            psels =
+                <NRF_PSEL(TWIM_SDA, 0, 2)>,
+                <NRF_PSEL(TWIM_SCL, 0, 29)>;
+
+            low-power-enable;
+        };
+    };
+};
+
+
+/*
+ * ============================================================
+ * I2C0
+ * ============================================================
+ */
+
+&i2c0 {
+    status = "okay";
+
+    pinctrl-0 = <&i2c0_default>;
+    pinctrl-1 = <&i2c0_sleep>;
+    pinctrl-names = "default", "sleep";
+
+    clock-frequency = <I2C_BITRATE_STANDARD>;
+
+
+    /*
+     * ========================================================
+     * SSD1306 0.91" OLED
+     * ========================================================
+     */
+
+    oled: ssd1306@3c {
+        compatible = "solomon,ssd1306fb";
+
+        reg = <0x3c>;
+
+        width = <128>;
+        height = <32>;
+
+        segment-offset = <0>;
+        page-offset = <0>;
+        display-offset = <0>;
+
+        multiplex-ratio = <31>;
+
+        segment-remap;
+        com-invdir;
+        com-sequential;
+
+        prechargep = <0x22>;
+
+        status = "okay";
     };
 };
