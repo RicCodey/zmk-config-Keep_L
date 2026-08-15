@@ -1,253 +1,66 @@
 #include <dt-bindings/zmk/matrix_transform.h>
-#include <zephyr/dt-bindings/gpio/gpio.h>
-#include <zephyr/dt-bindings/i2c/i2c.h>
 
-
-/*
- * ============================================================
- * Keeb_L
- * Nice!Nano V2
- * Standalone Bluetooth Master
- * ============================================================
- *
- * MATRIX
- *
- * Rows:
- *
- * R0 = P0.20
- * R1 = P0.22
- * R2 = P0.24
- * R3 = P1.00
- * R4 = P0.11
- *
- *
- * Columns:
- *
- * RIGHT ------------------------------ LEFT
- *
- * C0 = P1.04
- * C1 = P1.06
- * C2 = P0.09
- * C3 = P0.10
- * C4 = P1.11
- * C5 = P1.13
- * C6 = P1.15
- *
- *
- * PHYSICAL MATRIX DIRECTION
- *
- * Columns run RIGHT -> LEFT
- * Rows run TOP -> BOTTOM
- *
- *
- * DIODE ORIENTATION
- *
- * Stripe/cathode is toward ROW.
- *
- *
- *       ROW
- *        |
- *        |
- *       |<|
- *        |
- *        |
- *      COLUMN
- *
- *
- * Therefore:
- *
- * diode-direction = "col2row"
- *
- *
- * OLED
- *
- * SDA = P0.02
- * SCL = P0.29
- *
- * OLED = SSD1306
- * 128 x 32
- * I2C address = 0x3C
- *
- * ============================================================
- */
-
-
-/*
- * ============================================================
- * NFC PINS AS GPIO
- * ============================================================
- *
- * P0.02 is being used as OLED SDA.
- *
- * P0.02 is an nRF52840 NFC pin, so it must be converted
- * to normal GPIO operation.
- *
- * ============================================================
- */
-
-&uicr {
-    nfct-pins-as-gpios;
-};
-
-
-/*
- * ============================================================
- * I2C / OLED
- * ============================================================
- *
- * P0.02 = SDA
- * P0.29 = SCL
- *
- * ============================================================
- */
-
-&pinctrl {
-
-    i2c0_default: i2c0_default {
-        group1 {
-            psels =
-                <NRF_PSEL(TWIM_SDA, 0, 2)>,
-                <NRF_PSEL(TWIM_SCL, 0, 29)>;
-
-            bias-pull-up;
-        };
-    };
-
-    i2c0_sleep: i2c0_sleep {
-        group1 {
-            psels =
-                <NRF_PSEL(TWIM_SDA, 0, 2)>,
-                <NRF_PSEL(TWIM_SCL, 0, 29)>;
-
-            low-power-enable;
-        };
-    };
-};
-
-
-&i2c0 {
-
-    status = "okay";
-
-    pinctrl-0 = <&i2c0_default>;
-    pinctrl-1 = <&i2c0_sleep>;
-    pinctrl-names = "default", "sleep";
-
-
-    /*
-     * --------------------------------------------------------
-     * SSD1306 OLED
-     * --------------------------------------------------------
-     */
-
-    oled: ssd1306@3c {
-        compatible = "solomon,ssd1306fb";
-
-        reg = <0x3c>;
-
-        label = "SSD1306";
-
-        width = <128>;
-        height = <32>;
-
-        segment-offset = <0>;
-        page-offset = <0>;
-        display-offset = <0>;
-
-        multiplex-ratio = <31>;
-
-        segment-remap;
-        com-invdir;
-        com-sequential;
-
-        prechargep = <0x22>;
-    };
-};
-
-
-/*
- * ============================================================
- * MATRIX + DISPLAY SELECTION
- * ============================================================
- */
-
- / {
+/ {
     chosen {
-        zephyr,display = &oled;
-
         zmk,kscan = &kscan0;
-
         zmk,matrix-transform = &default_transform;
     };
-
-
-    /*
-     * ========================================================
-     * KEY MATRIX
-     * ========================================================
-     */
 
     kscan0: kscan {
         compatible = "zmk,kscan-gpio-matrix";
 
-
         /*
-         * Diode stripe/cathode is toward ROW.
+         * Your diode stripe is toward the ROW.
          */
         diode-direction = "col2row";
 
-
         /*
-         * ----------------------------------------------------
          * ROWS
-         * ----------------------------------------------------
          *
-         * TOP -> BOTTOM
+         * Top -> Bottom
          */
 
-               row-gpios =
-            <&gpio0 20 (GPIO_ACTIVE_HIGH | GPIO_PULL_DOWN)>, /* R0 */
-            <&gpio0 22 (GPIO_ACTIVE_HIGH | GPIO_PULL_DOWN)>, /* R1 */
-            <&gpio0 24 (GPIO_ACTIVE_HIGH | GPIO_PULL_DOWN)>, /* R2 */
-            <&gpio1 0  (GPIO_ACTIVE_HIGH | GPIO_PULL_DOWN)>, /* R3 */
-            <&gpio0 11 (GPIO_ACTIVE_HIGH | GPIO_PULL_DOWN)>; /* R4 */
-
+        row-gpios =
+            <&gpio0 20 GPIO_ACTIVE_HIGH>, /* Row 0 */
+            <&gpio0 22 GPIO_ACTIVE_HIGH>, /* Row 1 */
+            <&gpio0 24 GPIO_ACTIVE_HIGH>, /* Row 2 */
+            <&gpio1 0  GPIO_ACTIVE_HIGH>, /* Row 3 */
+            <&gpio0 11 GPIO_ACTIVE_HIGH>; /* Row 4 */
 
 
         /*
-         * ----------------------------------------------------
          * COLUMNS
-         * ----------------------------------------------------
          *
-         * RIGHT -> LEFT
+         * IMPORTANT:
+         *
+         * Physical wiring is:
+         *
+         * Column 7 = P1.15
+         * Column 6 = P1.13
+         * Column 5 = P1.11
+         * Column 4 = P0.10
+         * Column 3 = P0.09
+         * Column 2 = P1.06
+         * Column 1 = P1.04
+         *
+         * We intentionally reverse them here so
+         * software C0 is the LEFTMOST key.
          */
 
         col-gpios =
-            <&gpio1 4  GPIO_ACTIVE_HIGH>, /* C0 - rightmost */
-            <&gpio1 6  GPIO_ACTIVE_HIGH>, /* C1 */
-            <&gpio0 9  GPIO_ACTIVE_HIGH>, /* C2 */
-            <&gpio0 10 GPIO_ACTIVE_HIGH>, /* C3 */
-            <&gpio1 11 GPIO_ACTIVE_HIGH>, /* C4 */
-            <&gpio1 13 GPIO_ACTIVE_HIGH>, /* C5 */
-            <&gpio1 15 GPIO_ACTIVE_HIGH>; /* C6 - leftmost */
+            <&gpio1 15 GPIO_ACTIVE_HIGH>, /* Software C0 = physical C7 */
+            <&gpio1 13 GPIO_ACTIVE_HIGH>, /* Software C1 = physical C6 */
+            <&gpio1 11 GPIO_ACTIVE_HIGH>, /* Software C2 = physical C5 */
+            <&gpio0 10 GPIO_ACTIVE_HIGH>, /* Software C3 = physical C4 */
+            <&gpio0 9  GPIO_ACTIVE_HIGH>, /* Software C4 = physical C3 */
+            <&gpio1 6  GPIO_ACTIVE_HIGH>, /* Software C5 = physical C2 */
+            <&gpio1 4  GPIO_ACTIVE_HIGH>; /* Software C6 = physical C1 */
     };
 
 
     /*
      * ========================================================
-     * MATRIX TRANSFORM
-     * ========================================================
-     *
-     * 29 physical keys:
-     *
-     * Row 0 = 6
-     * Row 1 = 6
-     * Row 2 = 7
-     * Row 3 = 6
-     * Row 4 = 4
-     *
-     * TOTAL = 29
-     *
+     * 29 KEY MATRIX TRANSFORM
      * ========================================================
      */
 
@@ -259,7 +72,14 @@
 
         map = <
 
-            /* Row 0 */
+            /*
+             * ROW 0
+             *
+             * 6 keys
+             *
+             * C0 C1 C2 C3 C4 C5
+             */
+
             RC(0,0)
             RC(0,1)
             RC(0,2)
@@ -267,7 +87,15 @@
             RC(0,4)
             RC(0,5)
 
-            /* Row 1 */
+
+            /*
+             * ROW 1
+             *
+             * 6 keys
+             *
+             * C0 C1 C2 C3 C4 C5
+             */
+
             RC(1,0)
             RC(1,1)
             RC(1,2)
@@ -275,7 +103,15 @@
             RC(1,4)
             RC(1,5)
 
-            /* Row 2 */
+
+            /*
+             * ROW 2
+             *
+             * 7 keys
+             *
+             * C0 C1 C2 C3 C4 C5 C6
+             */
+
             RC(2,0)
             RC(2,1)
             RC(2,2)
@@ -284,7 +120,15 @@
             RC(2,5)
             RC(2,6)
 
-            /* Row 3 */
+
+            /*
+             * ROW 3
+             *
+             * 6 keys
+             *
+             * C0 C1 C2 C3 C4 C5
+             */
+
             RC(3,0)
             RC(3,1)
             RC(3,2)
@@ -292,7 +136,15 @@
             RC(3,4)
             RC(3,5)
 
-            /* Row 4 - thumb cluster */
+
+            /*
+             * ROW 4
+             *
+             * 4 keys
+             *
+             * C2 C3 C4 C6
+             */
+
             RC(4,2)
             RC(4,3)
             RC(4,4)
