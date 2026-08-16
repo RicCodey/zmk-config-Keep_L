@@ -50,6 +50,9 @@
 				&kp LCTRL
 				&kp LALT
 				&kp LGUI
+
+				/* Encoder pushbutton */
+				&tog 1
 			>;
 		};
 
@@ -96,6 +99,9 @@
 				&kp SPACE
 				&kp BSPC
 				&kp LSHIFT
+
+				/* Encoder pushbutton */
+				&trans
 			>;
 
 			sensor-bindings = <
