@@ -153,11 +153,8 @@
 		multiplex-ratio = <31>;
 
 		com-sequential;
-		com-inverted;
 
 		prechargep = <0x22>;
-
-		rotate = <180>;
 
 		status = "okay";
 	};
