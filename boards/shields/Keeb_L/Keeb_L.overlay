@@ -19,7 +19,10 @@
 
         diode-direction = "col2row";
 
-
+sensors {
+    compatible = "zmk,keymap-sensors";
+    sensors = <&encoder>;
+};
         
         row-gpios =
     <&gpio0 20 (GPIO_ACTIVE_HIGH | GPIO_PULL_DOWN)>,
