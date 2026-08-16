@@ -1,1 +1,1 @@
-   target_sources_ifdef(CONFIG_ZMK_DISPLAY_STATUS_SCREEN_CUSTOM app PRIVATE boards/shields/Keeb_L/widgets/status_screen.c)
+   target_sources_ifdef(CONFIG_ZMK_DISPLAY_STATUS_SCREEN_CUSTOM app PRIVATE widgets/status_screen.c)
