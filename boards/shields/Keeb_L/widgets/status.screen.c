@@ -4,46 +4,29 @@
 
 #include <zmk/battery.h>
 #include <zmk/keymap.h>
-
 LOG_MODULE_DECLARE(zmk, CONFIG_ZMK_LOG_LEVEL);
 
 static lv_obj_t *layer_label;
 static lv_obj_t *battery_label;
 
-static void update_status(struct k_work *work);
-
-K_WORK_DELAYABLE_DEFINE(status_work, update_status);
-
-static void update_status(struct k_work *work)
-{
+static void update_status(lv_timer_t *timer) {
     uint8_t layer = zmk_keymap_highest_layer_active();
     uint8_t battery = zmk_battery_state_of_charge();
 
     if (layer_label != NULL) {
-        lv_label_set_text_fmt(
-            layer_label,
-            "Layer %d",
-            layer
-        );
+        lv_label_set_text_fmt(layer_label, "Layer %d", layer);
     }
 
     if (battery_label != NULL) {
-        lv_label_set_text_fmt(
-            battery_label,
-            "Batt %d%%",
-            battery
-        );
+        lv_label_set_text_fmt(battery_label, "Batt %d%%", battery);
     }
-
-    k_work_schedule(&status_work, K_SECONDS(1));
 }
 
-lv_obj_t *zmk_display_status_screen(void)
-{
+lv_obj_t *zmk_display_status_screen(void) {
     lv_obj_t *screen = lv_obj_create(NULL);
 
     if (screen == NULL) {
-        LOG_ERR("Failed to create OLED status screen");
+        LOG_ERR("Failed to create status screen");
         return NULL;
     }
 
@@ -63,10 +46,7 @@ lv_obj_t *zmk_display_status_screen(void)
             1
         );
 
-        lv_label_set_text(
-            layer_label,
-            "Layer 0"
-        );
+        lv_label_set_text(layer_label, "Layer 0");
     }
 
     battery_label = lv_label_create(screen);
@@ -92,6 +72,8 @@ lv_obj_t *zmk_display_status_screen(void)
     }
 
     update_status(NULL);
+
+    lv_timer_create(update_status, 5000, NULL);
 
     return screen;
 }
