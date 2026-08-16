@@ -114,7 +114,7 @@ sensors {
     a-gpios = <&gpio1 2 GPIO_ACTIVE_HIGH>;
     b-gpios = <&gpio1 1 GPIO_ACTIVE_HIGH>;
 
-    steps = <16>;
+    steps = <22>;
 
     status = "okay";
 };
