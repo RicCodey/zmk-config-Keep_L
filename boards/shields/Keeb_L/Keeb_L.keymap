@@ -45,6 +45,10 @@
 				&kp LALT
 				&kp LGUI
 			>;
+
+			sensor-bindings = <
+				&inc_dec_kp C_VOL_UP C_VOL_DN
+			>;
 		};
 
 		layer_two {
