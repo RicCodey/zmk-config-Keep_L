@@ -8,6 +8,8 @@
 		compatible = "zmk,keymap";
 
 		default_layer {
+			display-name = "Base";
+
 			bindings = <
 
 				/* Row 1 - reversed */
@@ -48,9 +50,6 @@
 				&kp LCTRL
 				&kp LALT
 				&kp LGUI
-
-				/* Encoder pushbutton */
-				&tog 1
 			>;
 		};
 
@@ -97,9 +96,6 @@
 				&kp SPACE
 				&kp BSPC
 				&kp LSHIFT
-
-				/* Encoder pushbutton */
-				&trans
 			>;
 
 			sensor-bindings = <
