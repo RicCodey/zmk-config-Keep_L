@@ -109,15 +109,15 @@ sensors {
     
 
     encoder: encoder {
-        compatible = "alps,ec11";
+    compatible = "alps,ec11";
 
-        a-gpios = <&gpio1 1 GPIO_ACTIVE_HIGH>;
-        b-gpios = <&gpio1 2 GPIO_ACTIVE_HIGH>;
+    a-gpios = <&gpio1 2 GPIO_ACTIVE_HIGH>;
+    b-gpios = <&gpio1 1 GPIO_ACTIVE_HIGH>;
 
-        steps = <4>;
+    steps = <16>;
 
-        status = "okay";
-    };
+    status = "okay";
+};
 };
 
 
