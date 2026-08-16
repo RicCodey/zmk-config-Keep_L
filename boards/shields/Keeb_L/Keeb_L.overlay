@@ -2,49 +2,17 @@
 #include <zephyr/dt-bindings/i2c/i2c.h>
 
 / {
-    /*
-     * ========================================================
-     * CHOSEN DEVICES
-     * ========================================================
-     */
-
+    
     chosen {
         zmk,kscan = &kscan0;
         zmk,matrix-transform = &default_transform;
 
-        /*
-         * OLED
-         */
+    
         zephyr,display = &oled;
     };
 
 
-    /*
-     * ========================================================
-     * KEY MATRIX
-     * ========================================================
-     *
-     * ROWS:
-     *
-     * Row 1 = P0.20 = 6 keys
-     * Row 2 = P0.22 = 6 keys
-     * Row 3 = P0.24 = 7 keys
-     * Row 4 = P1.00 = 6 keys
-     * Row 5 = P0.11 = 4 keys
-     *
-     * TOTAL = 29 keys
-     *
-     *
-     * DIODE:
-     *
-     * Stripe/cathode is toward ROW.
-     *
-     * Therefore:
-     *
-     * col2row
-     *
-     * ========================================================
-     */
+    
 
     kscan0: kscan {
         compatible = "zmk,kscan-gpio-matrix";
@@ -52,41 +20,16 @@
         diode-direction = "col2row";
 
 
-        /*
-         * ----------------------------------------------------
-         * ROWS
-         * ----------------------------------------------------
-         *
-         * TOP -> BOTTOM
-         */
-
+        
         row-gpios =
-            <&gpio0 20 GPIO_ACTIVE_HIGH>, /* Row 1 */
-            <&gpio0 22 GPIO_ACTIVE_HIGH>, /* Row 2 */
-            <&gpio0 24 GPIO_ACTIVE_HIGH>, /* Row 3 */
-            <&gpio1 00  GPIO_ACTIVE_HIGH>, /* Row 4 */
-            <&gpio0 11 GPIO_ACTIVE_HIGH>; /* Row 5 */
+    <&gpio0 20 (GPIO_ACTIVE_HIGH | GPIO_PULL_DOWN)>,
+    <&gpio0 22 (GPIO_ACTIVE_HIGH | GPIO_PULL_DOWN)>,
+    <&gpio0 24 (GPIO_ACTIVE_HIGH | GPIO_PULL_DOWN)>,
+    <&gpio1 0  (GPIO_ACTIVE_HIGH | GPIO_PULL_DOWN)>,
+    <&gpio0 11 (GPIO_ACTIVE_HIGH | GPIO_PULL_DOWN)>;
 
 
-        /*
-         * ----------------------------------------------------
-         * COLUMNS
-         * ----------------------------------------------------
-         *
-         * PHYSICAL COLUMN NUMBERING:
-         *
-         * Column 7 = P1.04
-         * Column 6 = P1.06
-         * Column 5 = P0.09
-         * Column 4 = P0.10
-         * Column 3 = P1.11
-         * Column 2 = P1.13
-         * Column 1 = P1.15
-         *
-         *
-         * We intentionally put them into the software in this
-         * order so the physical keyboard is read LEFT -> RIGHT.
-         */
+        
 
         col-gpios =
             <&gpio1 4  GPIO_ACTIVE_HIGH>, /* C0 = physical C7 */
@@ -99,36 +42,7 @@
     };
 
 
-    /*
-     * ========================================================
-     * MATRIX TRANSFORM
-     * ========================================================
-     *
-     * Row 1 = 6
-     * Row 2 = 6
-     * Row 3 = 7
-     * Row 4 = 6
-     * Row 5 = 4
-     *
-     * TOTAL = 29
-     *
-     *
-     * Row 5 physical positions:
-     *
-     * Key 1 = physical Column 1
-     * Key 2 = physical Column 3
-     * Key 3 = physical Column 4
-     * Key 4 = physical Column 5
-     *
-     * Because the software columns are reversed:
-     *
-     * physical C1 = software C6
-     * physical C3 = software C4
-     * physical C4 = software C3
-     * physical C5 = software C2
-     *
-     * ========================================================
-     */
+    
 
     default_transform: matrix_transform {
         compatible = "zmk,matrix-transform";
@@ -138,13 +52,7 @@
 
         map = <
 
-            /*
-             * =================================================
-             * ROW 1
-             * =================================================
-             *
-             * 6 keys
-             */
+            
 
             RC(0,1)
             RC(0,2)
@@ -154,13 +62,7 @@
             RC(0,6)
 
 
-            /*
-             * =================================================
-             * ROW 2
-             * =================================================
-             *
-             * 6 keys
-             */
+            
 
             RC(1,1)
             RC(1,2)
@@ -170,16 +72,7 @@
             RC(1,6)
 
 
-            /*
-             * =================================================
-             * ROW 3
-             * =================================================
-             *
-             * 7 keys
-             *
-             * First key is in physical Column 1.
-             */
-
+           
             RC(2,0)
             RC(2,1)
             RC(2,2)
@@ -189,13 +82,7 @@
             RC(2,6)
 
 
-            /*
-             * =================================================
-             * ROW 4
-             * =================================================
-             *
-             * 6 keys
-             */
+           
 
             RC(3,1)
             RC(3,2)
@@ -205,22 +92,7 @@
             RC(3,6)
 
 
-            /*
-             * =================================================
-             * ROW 5
-             * =================================================
-             *
-             * Physical:
-             *
-             * Key 1 = Column 1
-             * Key 2 = Column 3
-             * Key 3 = Column 4
-             * Key 4 = Column 5
-             *
-             * Software:
-             *
-             * C6, C4, C3, C2
-             */
+            
 
             RC(4,0)
             RC(4,2)
@@ -231,19 +103,7 @@
     };
 
 
-    /*
-     * ========================================================
-     * ROTARY ENCODER
-     * ========================================================
-     *
-     * KY-040
-     *
-     * CLK = P1.01
-     * DT  = P1.02
-     * SW  = P1.07
-     *
-     * Encoder push button is not configured yet.
-     */
+    
 
     encoder: encoder {
         compatible = "alps,ec11";
@@ -258,18 +118,7 @@
 };
 
 
-/*
- * ============================================================
- * I2C PIN CONTROL
- * ============================================================
- *
- * OLED:
- *
- * SDA = P0.02
- * SCL = P0.29
- *
- * ============================================================
- */
+
 
 &pinctrl {
 
@@ -294,11 +143,7 @@
 };
 
 
-/*
- * ============================================================
- * I2C0
- * ============================================================
- */
+
 
 &i2c0 {
 
@@ -314,15 +159,7 @@
     clock-frequency = <I2C_BITRATE_STANDARD>;
 
 
-    /*
-     * ========================================================
-     * SSD1306 OLED
-     * ========================================================
-     *
-     * 0.91 inch
-     * 128 x 32
-     * I2C address 0x3C
-     */
+    
 
     oled: ssd1306@3c {
 
