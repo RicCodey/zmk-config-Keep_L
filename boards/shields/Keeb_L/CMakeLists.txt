@@ -1,3 +1,5 @@
-target_sources_ifdef(CONFIG_ZMK_DISPLAY_STATUS_SCREEN_CUSTOM app PRIVATE
-    widgets/status_screen.c
-)
+if(CONFIG_ZMK_DISPLAY_STATUS_SCREEN_CUSTOM)
+    target_sources(app PRIVATE
+        ${CMAKE_CURRENT_SOURCE_DIR}/widgets/status_screen.c
+    )
+endif()
