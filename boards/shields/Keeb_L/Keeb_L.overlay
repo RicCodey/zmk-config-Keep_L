@@ -113,8 +113,6 @@
 
 		prechargep = <0x22>;
 
-        invert-on;
-
 		status = "okay";
 	};
 };
