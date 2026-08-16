@@ -10,11 +10,9 @@
 	};
 
 	/*
-	 * COMPOSITE SCANNER
-	 *
-	 * 29 existing matrix keys
-	 * +
-	 * 1 encoder pushbutton
+	 * Combine:
+	 *   - your original 5x7 matrix
+	 *   - one direct GPIO encoder pushbutton
 	 */
 	kscan0: kscan0 {
 		compatible = "zmk,kscan-composite";
@@ -33,9 +31,8 @@
 	};
 
 	/*
-	 * ORIGINAL 5 x 7 MATRIX
-	 *
-	 * These pins are unchanged.
+	 * THIS IS YOUR ORIGINAL WORKING MATRIX.
+	 * Pins are unchanged.
 	 */
 	kscan_matrix: kscan_matrix {
 		compatible = "zmk,kscan-gpio-matrix";
@@ -65,14 +62,11 @@
 	};
 
 	/*
-	 * ENCODER PUSHBUTTON
+	 * Encoder pushbutton.
 	 *
-	 * P1.01
-	 *
-	 * Wire the EC11 pushbutton:
-	 * P1.01 -> switch -> GND
+	 * P1.01 -> button -> GND
 	 */
-	kscan_encoder_button: encoder_button {
+	kscan_encoder_button: kscan_encoder_button {
 		compatible = "zmk,kscan-gpio-direct";
 
 		input-gpios = <
@@ -84,12 +78,11 @@
 	};
 
 	/*
-	 * 30-position transform.
+	 * YOUR ORIGINAL 29-KEY TRANSFORM.
+	 * Absolutely no key positions changed.
 	 *
-	 * The first 29 positions are EXACTLY your
-	 * original matrix layout.
-	 *
-	 * RC(5,0) = encoder pushbutton.
+	 * RC(5,0) is the encoder pushbutton added
+	 * on the extra composite row.
 	 */
 	default_transform: matrix_transform {
 		compatible = "zmk,matrix-transform";
@@ -113,10 +106,13 @@
 	};
 
 	/*
-	 * EC11 ROTARY ENCODER
+	 * EC11 rotary encoder
 	 *
 	 * A = P1.02
 	 * B = P1.07
+	 *
+	 * P1.07 is the only change from your
+	 * original working encoder configuration.
 	 */
 	encoder: encoder {
 		compatible = "alps,ec11";
@@ -132,7 +128,6 @@
 
 /*
  * OLED I2C
- *
  * Completely unchanged.
  */
 &pinctrl {
