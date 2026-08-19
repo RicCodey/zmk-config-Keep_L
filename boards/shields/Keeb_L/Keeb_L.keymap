@@ -11,10 +11,10 @@
 		/*
 		 * ========================================================
 		 * LAYER 1
-		 * ========================================================
 		 *
-		 * Display:
+		 * OLED shows:
 		 * L1
+		 * ========================================================
 		 */
 		default_layer {
 			display-name = "L1";
@@ -56,7 +56,7 @@
 			>;
 
 			/*
-			 * EC11:
+			 * Encoder:
 			 *
 			 * Clockwise        = Volume Up
 			 * Counter-clockwise = Volume Down
@@ -70,13 +70,10 @@
 		/*
 		 * ========================================================
 		 * LAYER 2
-		 * ========================================================
 		 *
-		 * Display:
+		 * OLED shows:
 		 * L2
-		 *
-		 * The encoder button toggles this layer using
-		 * the sideband behavior in the overlay.
+		 * ========================================================
 		 */
 		layer_two {
 			display-name = "L2";
@@ -118,7 +115,7 @@
 			>;
 
 			/*
-			 * EC11:
+			 * Encoder:
 			 *
 			 * Clockwise        = Volume Up
 			 * Counter-clockwise = Volume Down
