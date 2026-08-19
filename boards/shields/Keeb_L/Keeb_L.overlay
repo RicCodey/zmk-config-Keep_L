@@ -4,13 +4,35 @@
 
 / {
 	chosen {
-		zmk,kscan = &sideband;
+		/*
+		 * IMPORTANT:
+		 * The normal keyboard matrix is the chosen kscan.
+		 *
+		 * The encoder pushbutton is handled separately by
+		 * the sideband kscan below.
+		 */
+		zmk,kscan = &kscan_matrix;
+
 		zmk,matrix-transform = &default_transform;
+
+		/*
+		 * KEEPING YOUR DISPLAY EXACTLY AS BEFORE
+		 */
 		zephyr,display = &oled;
 	};
 
+
 	/*
-	 * ORIGINAL WORKING MATRIX
+	 * ============================================================
+	 * ORIGINAL 29-KEY MATRIX
+	 *
+	 * Diodes:
+	 *
+	 * ROW -> DIODE -> COLUMN
+	 *
+	 * Therefore:
+	 * diode-direction = "row2col"
+	 * ============================================================
 	 */
 	kscan_matrix: kscan_matrix {
 		compatible = "zmk,kscan-gpio-matrix";
@@ -41,8 +63,14 @@
 
 
 	/*
-	 * SEPARATE ENCODER PUSHBUTTON
-	 * P1.01 -> switch -> GND
+	 * ============================================================
+	 * ENCODER PUSHBUTTON
+	 *
+	 * P1.01 -> SWITCH -> GND
+	 *
+	 * This is NOT part of the 29-key matrix.
+	 * It is a separate button used only for layer switching.
+	 * ============================================================
 	 */
 	encoder_button: encoder_button {
 		compatible = "zmk,kscan-gpio-direct";
@@ -55,25 +83,41 @@
 		debounce-release-ms = <10>;
 	};
 
+
 	/*
-	 * ASSIGN THE PUSHBUTTON DIRECTLY TO TOGGLE LAYER 2
+	 * ============================================================
+	 * ENCODER BUTTON SIDEband
+	 *
+	 * Press encoder button:
+	 *
+	 * L1 -> L2
+	 * L2 -> L1
+	 *
+	 * This button does NOT occupy one of the 29 matrix positions.
+	 * ============================================================
 	 */
 	sideband: sideband {
 		compatible = "zmk,kscan-sideband-behaviors";
 
 		kscan = <&encoder_button>;
+
 		auto-enable;
 
 		encoder_layer {
 			row = <0>;
 			column = <0>;
+
 			bindings = <&tog 1>;
 		};
 	};
 
+
 	/*
+	 * ============================================================
 	 * ORIGINAL 29-KEY MATRIX TRANSFORM
+	 *
 	 * UNCHANGED
+	 * ============================================================
 	 */
 	default_transform: matrix_transform {
 		compatible = "zmk,matrix-transform";
@@ -94,10 +138,16 @@
 		>;
 	};
 
+
 	/*
-	 * EC11
+	 * ============================================================
+	 * EC11 ROTARY ENCODER
+	 *
 	 * A = P1.02
 	 * B = P1.07
+	 *
+	 * Pushbutton = P1.01
+	 * ============================================================
 	 */
 	encoder: encoder {
 		compatible = "alps,ec11";
@@ -111,6 +161,17 @@
 	};
 };
 
+
+/*
+ * ================================================================
+ * I2C PIN CONTROL
+ *
+ * SDA = P0.17
+ * SCL = P0.20
+ *
+ * EXACTLY AS YOUR ORIGINAL CODE
+ * ================================================================
+ */
 &pinctrl {
 	i2c0_default: i2c0_default {
 		group1 {
@@ -131,6 +192,16 @@
 	};
 };
 
+
+/*
+ * ================================================================
+ * OLED
+ *
+ * THIS IS YOUR ORIGINAL OLED CONFIGURATION.
+ *
+ * Nothing has been changed here.
+ * ================================================================
+ */
 &i2c0 {
 	status = "okay";
 
