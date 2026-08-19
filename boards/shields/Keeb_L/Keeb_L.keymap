@@ -7,19 +7,9 @@
 	keymap {
 		compatible = "zmk,keymap";
 
-
 		/*
 		 * ========================================================
 		 * L1
-		 * ========================================================
-		 *
-		 * Physical order:
-		 *
-		 * R1: C1 C2 C3 C4 C5 C6
-		 * R2: C1 C2 C3 C4 C5 C6
-		 * R3: C1 C2 C3 C4 C5 C6 C7
-		 * R4: C1 C2 C3 C4 C5 C6
-		 * R5:       C3 C4 C5    C7
 		 * ========================================================
 		 */
 		default_layer {
@@ -67,16 +57,13 @@
 			>;
 
 			/*
-			 * EC11:
+			 * Encoder:
 			 *
-			 * Clockwise:
-			 * Volume Up
-			 *
-			 * Counter-clockwise:
-			 * Volume Down
+			 * CLOCKWISE      = Volume DOWN
+			 * COUNTERCLOCKWISE = Volume UP
 			 */
 			sensor-bindings = <
-				&inc_dec_kp C_VOL_UP C_VOL_DN
+				&inc_dec_kp C_VOL_DN C_VOL_UP
 			>;
 		};
 
@@ -84,6 +71,8 @@
 		/*
 		 * ========================================================
 		 * L2
+		 *
+		 * 26 LETTERS + SPACE + BACKSPACE + SHIFT
 		 * ========================================================
 		 */
 		layer_two {
@@ -91,50 +80,53 @@
 
 			bindings = <
 				/* R1 */
-				&kp N6
-				&kp N5
-				&kp N4
-				&kp N3
-				&kp N2
-				&kp N1
+				&kp A
+				&kp B
+				&kp C
+				&kp D
+				&kp E
+				&kp F
 
 				/* R2 */
-				&kp T
-				&kp R
-				&kp E
-				&kp W
-				&kp Q
-				&kp TAB
+				&kp G
+				&kp H
+				&kp I
+				&kp J
+				&kp K
+				&kp L
 
 				/* R3 */
-				&kp BSPC
-				&kp G
-				&kp F
-				&kp D
+				&kp M
+				&kp N
+				&kp O
+				&kp P
+				&kp Q
+				&kp R
 				&kp S
-				&kp A
-				&kp ESC
 
 				/* R4 */
-				&kp B
+				&kp T
+				&kp U
 				&kp V
-				&kp C
+				&kp W
 				&kp X
-				&kp Z
-				&kp LSHFT
+				&kp Y
 
 				/* R5 */
+				&kp Z
 				&kp SPACE
-				&kp LCTRL
-				&kp LALT
-				&kp LGUI
+				&kp BSPC
+				&kp LSHFT
 			>;
 
 			/*
-			 * EC11 remains volume control on L2.
+			 * Encoder remains volume control on L2.
+			 *
+			 * CLOCKWISE       = Volume DOWN
+			 * COUNTERCLOCKWISE = Volume UP
 			 */
 			sensor-bindings = <
-				&inc_dec_kp C_VOL_UP C_VOL_DN
+				&inc_dec_kp C_VOL_DN C_VOL_UP
 			>;
 		};
 	};
