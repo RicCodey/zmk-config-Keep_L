@@ -1,56 +1,47 @@
-#include <dt-bindings/zmk/matrix_transform.h>
+	#include <dt-bindings/zmk/matrix_transform.h>
 #include <zephyr/dt-bindings/i2c/i2c.h>
 #include <zephyr/dt-bindings/pinctrl/nrf-pinctrl.h>
 
 / {
 	chosen {
-		/*
-		 * MAIN KEYBOARD MATRIX
-		 *
-		 * Do NOT point this at the encoder button.
-		 */
 		zmk,kscan = &kscan_matrix;
-
 		zmk,matrix-transform = &default_transform;
-
-		/*
-		 * OLED
-		 */
 		zephyr,display = &oled;
 	};
-
 
 	/*
 	 * ============================================================
 	 * 29-KEY MATRIX
+	 * ============================================================
 	 *
-	 * Physical diode direction:
-	 *
+	 * Diodes:
 	 * COLUMN -> DIODE -> ROW
 	 *
-	 * Therefore:
+	 * Physical columns, left -> right:
 	 *
-	 * col2row
-	 * ============================================================
+	 * C1 = P1.15
+	 * C2 = P1.13
+	 * C3 = P1.11
+	 * C4 = P0.10
+	 * C5 = P0.09
+	 * C6 = P1.06
+	 * C7 = P1.04
+	 *
+	 * Physical rows, top -> bottom:
+	 *
+	 * R1 = P0.02
+	 * R2 = P0.22
+	 * R3 = P0.24
+	 * R4 = P1.00
+	 * R5 = P0.11
 	 */
+
 	kscan_matrix: kscan_matrix {
 		compatible = "zmk,kscan-gpio-matrix";
 
 		diode-direction = "col2row";
 
-		/*
-		 * ROWS
-		 *
-		 * Top -> Bottom
-		 *
-		 * R1 = P0.02
-		 * R2 = P0.22
-		 * R3 = P0.24
-		 * R4 = P1.00
-		 * R5 = P0.11
-		 *
-		 * Pull-downs are used on the sensed rows.
-		 */
+		/* Rows */
 		row-gpios =
 			<&gpio0 2  (GPIO_ACTIVE_HIGH | GPIO_PULL_DOWN)>,
 			<&gpio0 22 (GPIO_ACTIVE_HIGH | GPIO_PULL_DOWN)>,
@@ -58,21 +49,7 @@
 			<&gpio1 0  (GPIO_ACTIVE_HIGH | GPIO_PULL_DOWN)>,
 			<&gpio0 11 (GPIO_ACTIVE_HIGH | GPIO_PULL_DOWN)>;
 
-		/*
-		 * COLUMNS
-		 *
-		 * Left -> Right
-		 *
-		 * C1 = P1.15
-		 * C2 = P1.13
-		 * C3 = P1.11
-		 * C4 = P0.10
-		 * C5 = P0.09
-		 * C6 = P1.06
-		 * C7 = P1.04
-		 *
-		 * No pull resistors on the columns.
-		 */
+		/* Columns */
 		col-gpios =
 			<&gpio1 15 GPIO_ACTIVE_HIGH>,
 			<&gpio1 13 GPIO_ACTIVE_HIGH>,
@@ -82,9 +59,7 @@
 			<&gpio1 6  GPIO_ACTIVE_HIGH>,
 			<&gpio1 4  GPIO_ACTIVE_HIGH>;
 
-		/*
-		 * EC11 is sensor 0.
-		 */
+		/* EC11 rotation */
 		sensors {
 			compatible = "zmk,keymap-sensors";
 			sensors = <&encoder>;
@@ -94,13 +69,14 @@
 
 	/*
 	 * ============================================================
-	 * ENCODER PUSH BUTTON
+	 * EC11 PUSH BUTTON
+	 * ============================================================
 	 *
 	 * P1.07 -> SWITCH -> GND
 	 *
-	 * This is NOT part of the 29-key matrix.
-	 * ============================================================
+	 * This button is separate from the 29-key matrix.
 	 */
+
 	encoder_button: encoder_button {
 		compatible = "zmk,kscan-gpio-direct";
 
@@ -116,16 +92,14 @@
 	/*
 	 * ============================================================
 	 * ENCODER BUTTON -> LAYER TOGGLE
-	 *
-	 * P1.07
-	 *
-	 * Press once:
-	 * L1 -> L2
-	 *
-	 * Press again:
-	 * L2 -> L1
 	 * ============================================================
+	 *
+	 * P1.07:
+	 *
+	 * Press 1: L1 -> L2
+	 * Press 2: L2 -> L1
 	 */
+
 	sideband: sideband {
 		compatible = "zmk,kscan-sideband-behaviors";
 
@@ -136,7 +110,6 @@
 		encoder_layer {
 			row = <0>;
 			column = <0>;
-
 			bindings = <&tog 1>;
 		};
 	};
@@ -145,6 +118,7 @@
 	/*
 	 * ============================================================
 	 * MATRIX TRANSFORM
+	 * ============================================================
 	 *
 	 * Physical layout:
 	 *
@@ -154,13 +128,9 @@
 	 * R4: C1 C2 C3 C4 C5 C6
 	 * R5:       C3 C4 C5    C7
 	 *
-	 * 29 total positions.
-	 *
-	 * Because the physical columns are already ordered
-	 * left -> right in col-gpios, the transform follows
-	 * the same left -> right order.
-	 * ============================================================
+	 * 29 keys total.
 	 */
+
 	default_transform: matrix_transform {
 		compatible = "zmk,matrix-transform";
 
@@ -189,13 +159,13 @@
 	/*
 	 * ============================================================
 	 * EC11 ROTARY ENCODER
+	 * ============================================================
 	 *
 	 * A / CLK = P1.01
 	 * B / DT  = P1.02
-	 *
-	 * P1.07 is the separate push button.
-	 * ============================================================
+	 * Push   = P1.07
 	 */
+
 	encoder: encoder {
 		compatible = "alps,ec11";
 
@@ -212,13 +182,14 @@
 /*
  * ================================================================
  * I2C / OLED
+ * ================================================================
  *
  * SDA = P0.17
  * SCL = P0.20
- *
- * LEFT EXACTLY AS BEFORE
- * ================================================================
+ * Address = 0x3C
+ * Size = 128x32
  */
+
 &pinctrl {
 	i2c0_default: i2c0_default {
 		group1 {
