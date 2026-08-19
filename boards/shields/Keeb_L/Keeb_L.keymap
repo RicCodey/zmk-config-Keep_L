@@ -7,8 +7,17 @@
 	keymap {
 		compatible = "zmk,keymap";
 
+
+		/*
+		 * ========================================================
+		 * LAYER 1
+		 * ========================================================
+		 *
+		 * Display:
+		 * L1
+		 */
 		default_layer {
-			display-name = "Base";
+			display-name = "L1";
 
 			bindings = <
 				&kp N6
@@ -46,13 +55,31 @@
 				&kp LGUI
 			>;
 
+			/*
+			 * EC11:
+			 *
+			 * Clockwise        = Volume Up
+			 * Counter-clockwise = Volume Down
+			 */
 			sensor-bindings = <
 				&inc_dec_kp C_VOL_UP C_VOL_DN
 			>;
 		};
 
+
+		/*
+		 * ========================================================
+		 * LAYER 2
+		 * ========================================================
+		 *
+		 * Display:
+		 * L2
+		 *
+		 * The encoder button toggles this layer using
+		 * the sideband behavior in the overlay.
+		 */
 		layer_two {
-			display-name = "Layer 2";
+			display-name = "L2";
 
 			bindings = <
 				&kp N6
@@ -90,6 +117,12 @@
 				&kp LGUI
 			>;
 
+			/*
+			 * EC11:
+			 *
+			 * Clockwise        = Volume Up
+			 * Counter-clockwise = Volume Down
+			 */
 			sensor-bindings = <
 				&inc_dec_kp C_VOL_UP C_VOL_DN
 			>;
