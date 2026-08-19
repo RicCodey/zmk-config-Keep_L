@@ -5,18 +5,14 @@
 / {
 	chosen {
 		/*
-		 * IMPORTANT:
-		 * The normal keyboard matrix is the chosen kscan.
-		 *
-		 * The encoder pushbutton is handled separately by
-		 * the sideband kscan below.
+		 * Main keyboard scanner
 		 */
 		zmk,kscan = &kscan_matrix;
 
 		zmk,matrix-transform = &default_transform;
 
 		/*
-		 * KEEPING YOUR DISPLAY EXACTLY AS BEFORE
+		 * OLED
 		 */
 		zephyr,display = &oled;
 	};
@@ -24,20 +20,20 @@
 
 	/*
 	 * ============================================================
-	 * ORIGINAL 29-KEY MATRIX
+	 * 29-KEY MATRIX
 	 *
-	 * Diodes:
+	 * YOUR DIODE DIRECTION:
 	 *
-	 * ROW -> DIODE -> COLUMN
+	 * COLUMN -> DIODE -> ROW
 	 *
 	 * Therefore:
-	 * diode-direction = "row2col"
+	 * col2row
 	 * ============================================================
 	 */
 	kscan_matrix: kscan_matrix {
 		compatible = "zmk,kscan-gpio-matrix";
 
-		diode-direction = "row2col";
+		diode-direction = "col2row";
 
 		row-gpios =
 			<&gpio0 2  GPIO_ACTIVE_HIGH>,
@@ -66,17 +62,21 @@
 	 * ============================================================
 	 * ENCODER PUSHBUTTON
 	 *
-	 * P1.01 -> SWITCH -> GND
+	 * P1.07 -> SWITCH -> GND
 	 *
-	 * This is NOT part of the 29-key matrix.
-	 * It is a separate button used only for layer switching.
+	 * This button is separate from the 29-key matrix.
+	 *
+	 * Press:
+	 *
+	 * L1 -> L2
+	 * L2 -> L1
 	 * ============================================================
 	 */
 	encoder_button: encoder_button {
 		compatible = "zmk,kscan-gpio-direct";
 
 		input-gpios = <
-			&gpio1 1 (GPIO_ACTIVE_LOW | GPIO_PULL_UP)
+			&gpio1 7 (GPIO_ACTIVE_LOW | GPIO_PULL_UP)
 		>;
 
 		debounce-press-ms = <10>;
@@ -86,14 +86,14 @@
 
 	/*
 	 * ============================================================
-	 * ENCODER BUTTON SIDEband
+	 * ENCODER BUTTON SIDEBAND
 	 *
-	 * Press encoder button:
+	 * P1.07 controls the layer toggle.
+	 *
+	 * &tog 1:
 	 *
 	 * L1 -> L2
 	 * L2 -> L1
-	 *
-	 * This button does NOT occupy one of the 29 matrix positions.
 	 * ============================================================
 	 */
 	sideband: sideband {
@@ -114,9 +114,9 @@
 
 	/*
 	 * ============================================================
-	 * ORIGINAL 29-KEY MATRIX TRANSFORM
+	 * 29-KEY MATRIX TRANSFORM
 	 *
-	 * UNCHANGED
+	 * ORIGINAL PHYSICAL KEY LAYOUT
 	 * ============================================================
 	 */
 	default_transform: matrix_transform {
@@ -143,17 +143,19 @@
 	 * ============================================================
 	 * EC11 ROTARY ENCODER
 	 *
-	 * A = P1.02
-	 * B = P1.07
+	 * A / CLK = P1.01
+	 * B / DT  = P1.02
 	 *
-	 * Pushbutton = P1.01
+	 * P1.07 is the separate pushbutton.
+	 *
+	 * Rotation controls PC volume.
 	 * ============================================================
 	 */
 	encoder: encoder {
 		compatible = "alps,ec11";
 
-		a-gpios = <&gpio1 2 GPIO_ACTIVE_HIGH>;
-		b-gpios = <&gpio1 7 GPIO_ACTIVE_HIGH>;
+		a-gpios = <&gpio1 1 GPIO_ACTIVE_HIGH>;
+		b-gpios = <&gpio1 2 GPIO_ACTIVE_HIGH>;
 
 		steps = <50>;
 
@@ -164,12 +166,12 @@
 
 /*
  * ================================================================
- * I2C PIN CONTROL
+ * I2C
  *
  * SDA = P0.17
  * SCL = P0.20
  *
- * EXACTLY AS YOUR ORIGINAL CODE
+ * UNCHANGED
  * ================================================================
  */
 &pinctrl {
@@ -195,11 +197,11 @@
 
 /*
  * ================================================================
- * OLED
+ * SSD1306 OLED
  *
- * THIS IS YOUR ORIGINAL OLED CONFIGURATION.
+ * EXACTLY YOUR ORIGINAL DISPLAY CONFIGURATION
  *
- * Nothing has been changed here.
+ * Nothing changed here.
  * ================================================================
  */
 &i2c0 {
