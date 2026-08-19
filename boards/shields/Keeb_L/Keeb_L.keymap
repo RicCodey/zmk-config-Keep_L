@@ -7,11 +7,19 @@
 	keymap {
 		compatible = "zmk,keymap";
 
+
 		/*
 		 * ========================================================
 		 * L1
 		 * ========================================================
+		 *
+		 * R1: N6 N5 N4 N3 N2 N1
+		 * R2: T  R  E  W  Q  TAB
+		 * R3: BSPC G  F  D  S  A  ESC
+		 * R4: B  V  C  X  Z  LSHFT
+		 * R5: SPACE CTRL ALT GUI
 		 */
+
 		default_layer {
 			display-name = "L1";
 
@@ -56,12 +64,7 @@
 				&kp LGUI
 			>;
 
-			/*
-			 * Encoder:
-			 *
-			 * CLOCKWISE      = Volume DOWN
-			 * COUNTERCLOCKWISE = Volume UP
-			 */
+			/* CW = Volume Down, CCW = Volume Up */
 			sensor-bindings = <
 				&inc_dec_kp C_VOL_DN C_VOL_UP
 			>;
@@ -71,10 +74,17 @@
 		/*
 		 * ========================================================
 		 * L2
-		 *
-		 * 26 LETTERS + SPACE + BACKSPACE + SHIFT
 		 * ========================================================
+		 *
+		 * Alphabet layer.
+		 *
+		 * R1: A B C D E F
+		 * R2: G H I J K L
+		 * R3: M N O P Q R S
+		 * R4: T U V W X Y
+		 * R5: Z SPACE BSPC SHIFT
 		 */
+
 		layer_two {
 			display-name = "L2";
 
@@ -119,12 +129,7 @@
 				&kp LSHFT
 			>;
 
-			/*
-			 * Encoder remains volume control on L2.
-			 *
-			 * CLOCKWISE       = Volume DOWN
-			 * COUNTERCLOCKWISE = Volume UP
-			 */
+			/* CW = Volume Down, CCW = Volume Up */
 			sensor-bindings = <
 				&inc_dec_kp C_VOL_DN C_VOL_UP
 			>;
